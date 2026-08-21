@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_product_template_form_fuze" model="ir.ui.view">
+        <field name="name">product.template.form.fuze</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form/sheet/notebook" position="inside">
+                <page string="Fuze Website" name="fuze_website">
+                    <group>
+                        <group>
+                            <field name="fuze_website_published"/>
+                            <field name="fuze_website_key"/>
+                            <field name="fuze_website_sequence"/>
+                            <field name="fuze_website_tags" placeholder="favourite, spicy, vegetarian"/>
+                        </group>
+                        <group>
+                            <field name="fuze_pos_config_ids" widget="many2many_tags"/>
+                            <field name="fuze_station_ids" widget="many2many_tags"/>
+                            <field name="available_in_pos"/>
+                        </group>
+                    </group>
+                    <group><field name="fuze_website_description" placeholder="Description shown in the branded Fuze menu."/></group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>
