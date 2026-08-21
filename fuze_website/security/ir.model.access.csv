@@ -1,5 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_fuze_kitchen_station_user,fuze.kitchen.station user,model_fuze_kitchen_station,fuze_website.group_fuze_kitchen_user,1,0,0,0
-access_fuze_kitchen_station_manager,fuze.kitchen.station manager,model_fuze_kitchen_station,fuze_website.group_fuze_kitchen_manager,1,1,1,1
-access_fuze_kitchen_display_user,fuze.kitchen.display user,model_fuze_kitchen_display,fuze_website.group_fuze_kitchen_user,1,0,0,0
-access_fuze_kitchen_display_manager,fuze.kitchen.display manager,model_fuze_kitchen_display,fuze_website.group_fuze_kitchen_manager,1,1,1,1
