@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_pos_config_form_fuze" model="ir.ui.view">
+        <field name="name">pos.config.form.fuze</field>
+        <field name="model">pos.config</field>
+        <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form/sheet/notebook" position="inside">
+                <page string="Fuze Website &amp; Kitchen" name="fuze_restaurant">
+                    <group>
+                        <group string="Online Ordering">
+                            <field name="fuze_branch_code"/>
+                            <field name="fuze_branch_display_name"/>
+                            <field name="fuze_branch_phone"/>
+                            <field name="fuze_branch_address"/>
+                            <field name="fuze_online_ordering"/>
+                            <field name="fuze_delivery_enabled"/>
+                            <field name="fuze_delivery_fee" invisible="not fuze_delivery_enabled"/>
+                        </group>
+                        <group string="Preparation &amp; Payment">
+                            <field name="fuze_kds_enabled"/>
+                            <field name="fuze_online_payment_method_id"/>
+                            <field name="fuze_store_payment_method_id"/>
+                            <field name="payment_method_ids" invisible="1"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-info" role="alert">
+                        Website orders require an open POS session. Products can remain service products; stock tracking is not required for prepared menu items.
+                    </div>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

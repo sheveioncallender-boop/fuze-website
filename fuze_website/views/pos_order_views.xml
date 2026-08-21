@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_pos_order_form_fuze" model="ir.ui.view">
+        <field name="name">pos.order.form.fuze</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form/sheet/notebook" position="inside">
+                <page string="Fuze Order" name="fuze_order" invisible="not fuze_kds_order">
+                    <group>
+                        <group>
+                            <field name="fuze_order_reference"/>
+                            <field name="fuze_website_order"/>
+                            <field name="fuze_fulfilment"/>
+                            <field name="fuze_kitchen_stage"/>
+                            <field name="fuze_payment_state"/>
+                            <field name="fuze_payment_reference"/>
+                            <field name="fuze_store_paid_at" invisible="fuze_payment_state != 'paid_at_store'"/>
+                            <field name="fuze_store_paid_by" invisible="fuze_payment_state != 'paid_at_store'"/>
+                        </group>
+                        <group>
+                            <field name="fuze_customer_name"/>
+                            <field name="fuze_customer_phone"/>
+                            <field name="fuze_customer_email"/>
+                            <field name="fuze_delivery_address" invisible="fuze_fulfilment != 'delivery'"/>
+                        </group>
+                    </group>
+                    <group string="Preparation Audit">
+                        <field name="fuze_acknowledged_at"/><field name="fuze_acknowledged_by"/>
+                        <field name="fuze_preparing_at"/><field name="fuze_preparing_by"/>
+                        <field name="fuze_ready_at"/><field name="fuze_ready_by"/>
+                        <field name="fuze_completed_at"/><field name="fuze_completed_by"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_pos_order_search_fuze" model="ir.ui.view">
+        <field name="name">pos.order.search.fuze</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_order_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <filter name="fuze_active" string="Active Kitchen Orders" domain="[('fuze_kds_order','=',True), ('fuze_kitchen_stage','in',['new','acknowledged','preparing','ready'])]"/>
+                <filter name="fuze_website" string="Website Orders" domain="[('fuze_website_order','=',True)]"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="fuze_payment_pay_branding" inherit_id="payment.pay" name="Fuze Secure Payment Branding">
+        <xpath expr="//t[@t-call='portal.frontend_layout']" position="inside">
+            <t t-if="landing_route == '/fuze/payment/confirmation'" t-set="no_header" t-value="True"/>
+            <t t-if="landing_route == '/fuze/payment/confirmation'" t-set="no_footer" t-value="True"/>
+        </xpath>
+        <xpath expr="//div[contains(concat(' ', normalize-space(@class), ' '), ' wrap ')]" position="attributes">
+            <attribute name="t-attf-class">wrap #{landing_route == '/fuze/payment/confirmation' and 'fuze-payment-provider' or ''}</attribute>
+        </xpath>
+        <xpath expr="//div[contains(concat(' ', normalize-space(@class), ' '), ' wrap ')]" position="before">
+            <header class="fuze-provider-header" t-if="landing_route == '/fuze/payment/confirmation'">
+                <a href="/" aria-label="Fuze home"><img src="/fuze_website/static/src/images/fuze-logo-transparent.png" alt="Fuze Restaurant"/></a>
+                <span>Secure card checkout</span>
+            </header>
+        </xpath>
+        <xpath expr="//t[@t-call='payment.portal_breadcrumb']" position="replace">
+            <div class="fuze-provider-eyebrow" t-if="landing_route == '/fuze/payment/confirmation'">Odoo protected payment</div>
+            <t t-else="" t-call="payment.portal_breadcrumb"/>
+        </xpath>
+        <xpath expr="//div[contains(@class, 'col-lg-7')]/div[@t-if='not amount']" position="before">
+            <section class="fuze-provider-intro" t-if="landing_route == '/fuze/payment/confirmation'">
+                <p>Final step</p>
+                <h1>PAY<br/><em>SECURELY.</em></h1>
+                <span>Choose a card method below. Payment details are handled by the configured Odoo provider—not by the Fuze storefront.</span>
+            </section>
+        </xpath>
+    </template>
+
+    <template id="fuze_payment_confirmation" name="Fuze Payment Confirmation">
+        <t t-call="website.layout">
+            <t t-set="additional_title">Order Confirmation | Fuze Restaurant</t>
+            <t t-set="no_header" t-value="True"/>
+            <t t-set="no_footer" t-value="True"/>
+            <t t-set="head">
+                <link rel="preconnect" href="https://fonts.googleapis.com"/>
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&amp;family=DM+Sans:wght@400;500;600;700&amp;display=swap"/>
+            </t>
+            <div id="wrap" class="oe_structure fuze-payment-result">
+                <header class="fuze-payment-result__header">
+                    <a href="/" aria-label="Fuze home"><img src="/fuze_website/static/src/images/fuze-logo-transparent.png" alt="Fuze Restaurant"/></a>
+                    <span>Secure Odoo checkout</span>
+                </header>
+                <main class="fuze-payment-result__main" id="fuzePaymentResult" t-att-data-status-url="status_url" t-att-data-paid="order.fuze_payment_state == 'paid_online' and 'true' or 'false'">
+                    <div class="fuze-payment-result__mark"><span t-if="order.fuze_payment_state == 'paid_online'">✓</span><span t-else="">…</span></div>
+                    <p>Order journey</p>
+                    <h1 t-if="order.fuze_payment_state == 'paid_online'">THAT’S<br/><em>FUZED.</em></h1>
+                    <h1 t-else="">PAYMENT<br/><em>PROCESSING.</em></h1>
+                    <p class="fuze-payment-result__lead" id="fuzePaymentLead" t-if="order.fuze_payment_state == 'paid_online'">Your payment is confirmed and the kitchen has received your order.</p>
+                    <p class="fuze-payment-result__lead" id="fuzePaymentLead" t-else="">Odoo is confirming the payment provider response. This page updates automatically.</p>
+                    <div class="fuze-payment-result__reference"><span>Order reference</span><strong t-esc="order.fuze_order_reference"/></div>
+                    <div class="fuze-payment-result__details">
+                        <div><span>Location</span><strong t-esc="order.config_id.fuze_branch_display_name or order.config_id.name"/></div>
+                        <div><span>Order type</span><strong><t t-if="order.fuze_fulfilment == 'delivery'">Delivery</t><t t-else="">Pickup</t></strong></div>
+                        <div><span>Payment</span><strong id="fuzePaymentState"><t t-if="order.fuze_payment_state == 'paid_online'">Paid Online</t><t t-else="">Processing</t></strong></div>
+                        <div><span>Total</span><strong><t t-esc="order.currency_id.symbol"/><t t-esc="order.amount_total"/> TTD</strong></div>
+                    </div>
+                    <div class="fuze-payment-result__actions"><a class="fuze-payment-button" href="/">Back home <span>→</span></a><a href="/menu">Start another order ↗</a></div>
+                </main>
+            </div>
+            <script>
+                (() => {
+                    const result = document.getElementById('fuzePaymentResult');
+                    if (!result || result.dataset.paid === 'true') return;
+                    let attempts = 0;
+                    const poll = window.setInterval(async () => {
+                        attempts += 1;
+                        if (attempts > 120) return window.clearInterval(poll);
+                        try {
+                            const response = await fetch(result.dataset.statusUrl, { headers: { Accept: 'application/json' }, cache: 'no-store' });
+                            const status = await response.json();
+                            if (status.paymentState === 'paid_online') window.location.reload();
+                            if (status.paymentState === 'failed') {
+                                window.clearInterval(poll);
+                                document.getElementById('fuzePaymentState').textContent = 'Payment not completed';
+                                document.getElementById('fuzePaymentLead').textContent = 'The payment was not completed. Please return to the menu and try again or choose card at the restaurant.';
+                            }
+                        } catch (_error) { /* Keep the branded confirmation visible while the provider finishes. */ }
+                    }, 2500);
+                })();
+            </script>
+        </t>
+    </template>
+</odoo>
